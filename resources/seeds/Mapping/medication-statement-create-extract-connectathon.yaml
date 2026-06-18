@@ -1,0 +1,75 @@
+id: medication-statement-create-extract-connectathon
+type: FHIRPath
+resourceType: Mapping
+body:
+  "{% assign %}":
+    - id: "{{ %QuestionnaireResponse.answers('medication-statement-id') }}"
+    - patientRef: "{{ %QuestionnaireResponse.answers('patient') }}"
+    - status: "{{ %QuestionnaireResponse.answers('status') }}"
+    - medicationStatementStatus: "{{ %MedicationStatement.status }}"
+    - statusCode: "{{ iif(%status.code.exists(), %status.code, iif(%status.exists(), %status, iif(%medicationStatementStatus.exists(), %medicationStatementStatus, 'active'))) }}"
+    - statusReason: "{{ %QuestionnaireResponse.answers('status-reason') }}"
+    - category: "{{ %QuestionnaireResponse.answers('category') }}"
+    - medicationCode: "{{ %QuestionnaireResponse.answers('medication') }}"
+    - reasonCodes: "{[ %QuestionnaireResponse.repeat(item).where(linkId='reason-code').answer.valueCoding ]}"
+    - effectiveDateTime: "{{ %QuestionnaireResponse.answers('effective-date-time') }}"
+    - encounterRef: "{{ %QuestionnaireResponse.answers('encounter') }}"
+    - dosage: "{{ %QuestionnaireResponse.answers('dosage') }}"
+    - note: "{{ %QuestionnaireResponse.answers('note') }}"
+    - medicationDisplay: "{{ iif(%medicationCode.display.exists(), %medicationCode.display, %medicationCode.text) }}"
+    - narrativeDiv: "<div xmlns='http://www.w3.org/1999/xhtml'>PH Core MedicationStatement{{ iif(%patientRef.display.exists(), ' for ' + %patientRef.display, '') }}{{ iif(%medicationDisplay.exists(), ' — ' + %medicationDisplay, '') }} — status {{ %statusCode }}.</div>"
+    - addMedicationStatement:
+        request:
+          "{% if %id.exists() %}":
+            url: /MedicationStatement/{{ %id }}
+            method: PUT
+          "{% else %}":
+            url: /MedicationStatement
+            method: POST
+        resource:
+          resourceType: MedicationStatement
+          meta:
+            profile:
+              - https://fhir.doh.gov.ph/phcore/StructureDefinition/ph-core-medicationstatement
+          id:
+            "{% if %id.exists() %}": "{{ %id }}"
+          status: "{{ %statusCode }}"
+          subject: "{{ %patientRef }}"
+          medicationCodeableConcept:
+            coding:
+              - "{{ %medicationCode }}"
+            text: "{{ %medicationDisplay }}"
+          text:
+            status: generated
+            div: "{{ %narrativeDiv }}"
+          "{% merge %}":
+            - "{% if %statusReason.exists() %}":
+                statusReason:
+                  - coding:
+                      - "{{ %statusReason }}"
+                    text: "{{ %statusReason.display }}"
+            - "{% if %category.exists() %}":
+                category:
+                  coding:
+                    - "{{ %category }}"
+                  text: "{{ %category.display }}"
+            - "{% if %reasonCodes.exists() %}":
+                reasonCode:
+                  - "{% for reasonCode in %reasonCodes %}":
+                      coding:
+                        - "{{ %reasonCode }}"
+                      text: "{{ %reasonCode.display }}"
+            - "{% if %effectiveDateTime.exists() %}":
+                effectiveDateTime: "{{ %effectiveDateTime }}"
+            - "{% if %encounterRef.exists() %}":
+                context: "{{ %encounterRef }}"
+            - "{% if %dosage.exists() %}":
+                dosage:
+                  - text: "{{ %dosage }}"
+            - "{% if %note.exists() %}":
+                note:
+                  - text: "{{ %note }}"
+  resourceType: Bundle
+  type: transaction
+  entry:
+    - "{{ %addMedicationStatement }}"

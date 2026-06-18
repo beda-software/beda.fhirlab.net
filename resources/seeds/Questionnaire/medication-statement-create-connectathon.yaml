@@ -1,0 +1,196 @@
+meta:
+  profile:
+    - https://emr-core.beda.software/StructureDefinition/fhir-emr-questionnaire
+name: medication-statement-create-connectathon
+item:
+  - text: MedicationStatementId
+    type: string
+    linkId: medication-statement-id
+    extension:
+      - url: http://hl7.org/fhir/StructureDefinition/questionnaire-hidden
+        valueBoolean: true
+      - url: >-
+          http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-initialExpression
+        valueExpression:
+          language: text/fhirpath
+          expression: '%MedicationStatement.id'
+  - text: Patient
+    type: reference
+    linkId: patient
+    required: true
+    extension:
+      - url: >-
+          http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-choiceColumn
+        extension:
+          - url: path
+            valueString: >-
+              name.given.first() + ' ' + name.family.first()
+          - url: forDisplay
+            valueBoolean: true
+      - url: >-
+          http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-answerExpression
+        valueExpression:
+          language: application/x-fhir-query
+          expression: Patient
+      - url: >-
+          http://hl7.org/fhir/StructureDefinition/questionnaire-referenceResource
+        valueCode: Patient
+      - url: >-
+          http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-initialExpression
+        valueExpression:
+          language: text/fhirpath
+          expression: '%MedicationStatement.subject'
+  - text: Status
+    type: choice
+    linkId: status
+    required: true
+    answerOption:
+      - valueCoding:
+          system: http://hl7.org/fhir/CodeSystem/medication-statement-status
+          code: active
+          display: Active
+      - valueCoding:
+          system: http://hl7.org/fhir/CodeSystem/medication-statement-status
+          code: completed
+          display: Completed
+      - valueCoding:
+          system: http://hl7.org/fhir/CodeSystem/medication-statement-status
+          code: stopped
+          display: Stopped
+      - valueCoding:
+          system: http://hl7.org/fhir/CodeSystem/medication-statement-status
+          code: on-hold
+          display: On Hold
+      - valueCoding:
+          system: http://hl7.org/fhir/CodeSystem/medication-statement-status
+          code: entered-in-error
+          display: Entered in Error
+      - valueCoding:
+          system: http://hl7.org/fhir/CodeSystem/medication-statement-status
+          code: intended
+          display: Intended
+      - valueCoding:
+          system: http://hl7.org/fhir/CodeSystem/medication-statement-status
+          code: not-taken
+          display: Not Taken
+      - valueCoding:
+          system: http://hl7.org/fhir/CodeSystem/medication-statement-status
+          code: unknown
+          display: Unknown
+    extension:
+      - url: >-
+          http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-initialExpression
+        valueExpression:
+          language: text/fhirpath
+          expression: >-
+            iif(%MedicationStatement.status.exists(), %Questionnaire.repeat(item).where(linkId='status').answerOption.valueCoding.where(code=%MedicationStatement.status).first(), %Questionnaire.repeat(item).where(linkId='status').answerOption.valueCoding.where(code='active').first())
+  - text: Status reason
+    type: choice
+    linkId: status-reason
+    answerValueSet: http://hl7.org/fhir/ValueSet/reason-medication-status-codes
+    extension:
+      - url: >-
+          http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-initialExpression
+        valueExpression:
+          language: text/fhirpath
+          expression: '%MedicationStatement.statusReason.first().coding.first()'
+  - text: Category
+    type: choice
+    linkId: category
+    answerValueSet: http://hl7.org/fhir/ValueSet/medication-statement-category
+    extension:
+      - url: >-
+          http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-initialExpression
+        valueExpression:
+          language: text/fhirpath
+          expression: '%MedicationStatement.category.coding.first()'
+  - text: Medication
+    type: choice
+    linkId: medication
+    required: true
+    answerValueSet: https://fhir.doh.gov.ph/phcore/ValueSet/drugs-vs
+    extension:
+      - url: >-
+          http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-initialExpression
+        valueExpression:
+          language: text/fhirpath
+          expression: '%MedicationStatement.medicationCodeableConcept.coding.first()'
+  - text: Reason
+    type: choice
+    linkId: reason-code
+    repeats: true
+    answerValueSet: http://hl7.org/fhir/ValueSet/condition-code
+    extension:
+      - url: >-
+          http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-initialExpression
+        valueExpression:
+          language: text/fhirpath
+          expression: '%MedicationStatement.reasonCode.coding'
+  - text: Effective date and time
+    type: dateTime
+    linkId: effective-date-time
+    extension:
+      - url: >-
+          http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-initialExpression
+        valueExpression:
+          language: text/fhirpath
+          expression: '%MedicationStatement.effectiveDateTime'
+  - text: Encounter
+    type: reference
+    linkId: encounter
+    extension:
+      - url: >-
+          http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-choiceColumn
+        extension:
+          - url: path
+            valueString: >-
+              class.display + ' - ' + period.start.toString().split('.')[0].split('T')[0] + ' ' + period.start.toString().split('.')[0].split('T')[1]
+          - url: forDisplay
+            valueBoolean: true
+      - url: >-
+          http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-answerExpression
+        valueExpression:
+          language: application/x-fhir-query
+          expression: Encounter?patient={{%QuestionnaireResponse.repeat(item).where(linkId='patient').answer.valueReference.reference}}
+      - url: >-
+          http://hl7.org/fhir/StructureDefinition/questionnaire-referenceResource
+        valueCode: Encounter
+      - url: >-
+          http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-initialExpression
+        valueExpression:
+          language: text/fhirpath
+          expression: '%MedicationStatement.context'
+  - text: Dosage
+    type: string
+    linkId: dosage
+    extension:
+      - url: >-
+          http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-initialExpression
+        valueExpression:
+          language: text/fhirpath
+          expression: '%MedicationStatement.dosage.first().text'
+  - text: Note
+    type: text
+    linkId: note
+    extension:
+      - url: >-
+          http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-initialExpression
+        valueExpression:
+          language: text/fhirpath
+          expression: '%MedicationStatement.note.text.first()'
+resourceType: Questionnaire
+title: Medication statement create PH
+extension:
+  - url: https://emr-core.beda.software/StructureDefinition/questionnaire-mapper
+    valueReference:
+      reference: Mapping/medication-statement-create-extract-connectathon
+  - url: http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-launchContext
+    extension:
+      - url: name
+        valueCoding:
+          code: MedicationStatement
+      - url: type
+        valueCode: MedicationStatement
+status: active
+id: medication-statement-create-connectathon
+url: medication-statement-create

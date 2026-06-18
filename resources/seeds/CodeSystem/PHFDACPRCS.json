@@ -1,0 +1,20 @@
+{
+  "resourceType": "CodeSystem",
+  "id": "PHFDACPRCS",
+  "url": "https://verification.fda.gov.ph",
+  "version": "0.2.0",
+  "name": "PHFDACPRCS",
+  "title": "PH FDA Certificate of Product Registration (CPR) CodeSystem",
+  "status": "active",
+  "content": "complete",
+  "concept": [
+    {
+      "code": "DRP-10144",
+      "display": "Twinact"
+    },
+    {
+      "code": "1193768",
+      "display": "Ascorfed-Z Cap"
+    }
+  ]
+}
