@@ -32,7 +32,7 @@ import {
     MedicationsIcon,
     OrganizationsIcon,
 } from '@beda.software/emr/icons';
-import { createFHIRResource, expandEMRValueSet as expandViaAidbox, expandExternalTerminology, getUserInfo } from '@beda.software/emr/services';
+import { createFHIRResource, expandExternalTerminology, getUserInfo } from '@beda.software/emr/services';
 import { sharedAuthorizedUser } from '@beda.software/emr/sharedState';
 import { ThemeProvider } from '@beda.software/emr/theme';
 import { matchCurrentUserRole, Role } from '@beda.software/emr/utils';
@@ -62,19 +62,18 @@ async function expandEMRValueSet(
         return [];
     }
 
-    if (preferredTerminologyServer) {
-        const external = await expandExternalTerminology(preferredTerminologyServer, answerValueSet, searchText);
-        if (isSuccess(external)) {
-            return external.data;
-        }
-    } else {
-        const external = await expandExternalTerminology('https://tx.fhirlab.net/fhir', answerValueSet, searchText);
-        if (isSuccess(external)) {
-            return external.data;
+    if (answerValueSet) {
+        const res = await expandExternalTerminology(
+            preferredTerminologyServer ?? 'https://tx.fhirlab.net/fhir',
+            answerValueSet,
+            searchText,
+        );
+        if (isSuccess(res)) {
+            return res.data;
         }
     }
 
-    return expandViaAidbox(answerValueSet, searchText, preferredTerminologyServer);
+    return [];
 }
 
 interface AidboxRole {
