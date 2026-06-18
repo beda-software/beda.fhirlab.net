@@ -6,6 +6,10 @@ import { questionnaireAction, ResourceListPage } from '@beda.software/emr/compon
 import { compileAsFirst, formatHumanDateTime } from '@beda.software/emr/utils';
 
 export const getObservationCode = compileAsFirst<Observation,string>("Observation.code.coding.first().display")
+
+export function getEffectiveDateTime(resource: Observation): string | undefined {
+    return resource.effectiveDateTime ?? (resource as Observation & { effective?: { dateTime?: string } }).effective?.dateTime;
+}
 function getComponentValue(c: ObservationComponent) {
     if (c.dataAbsentReason) {
         return [c.dataAbsentReason.text];
