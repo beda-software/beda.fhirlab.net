@@ -142,6 +142,14 @@ export function MedicationsUberList() {
                                 },
                             },
                         },
+                        {
+                            value: {
+                                Coding: {
+                                    code: 'unknown',
+                                    display: 'Unknown',
+                                },
+                            },
+                        },
                     ],
                     placement: ['table', 'search-bar'],
                 },
