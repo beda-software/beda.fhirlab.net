@@ -108,7 +108,13 @@ item:
     type: choice
     linkId: medication
     required: true
-    answerValueSet: https://fhir.doh.gov.ph/phcore/ValueSet/drugs-vs
+    # TODO: uncomment answerValueSet when tx.fhirlab.net expands drugs-vs
+    # answerValueSet: https://fhir.doh.gov.ph/phcore/ValueSet/drugs-vs
+    answerOption:
+      - valueCoding:
+          system: https://verification.fda.gov.ph
+          code: DRP-10144
+          display: Twinact
     extension:
       - url: >-
           http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-initialExpression
