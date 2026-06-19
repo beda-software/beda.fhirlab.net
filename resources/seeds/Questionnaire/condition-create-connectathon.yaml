@@ -39,7 +39,7 @@ item:
           http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-initialExpression
         valueExpression:
           language: text/fhirpath
-          expression: '%Condition.subject'
+          expression: "iif(%Condition.subject.exists(), %Condition.subject, %Patient)"
   - text: Encounter
     type: reference
     linkId: encounter
@@ -203,15 +203,6 @@ item:
         valueExpression:
           language: text/fhirpath
           expression: '%Condition.recordedDate'
-  - text: Abatement date and time
-    type: dateTime
-    linkId: abatement-date-time
-    extension:
-      - url: >-
-          http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-initialExpression
-        valueExpression:
-          language: text/fhirpath
-          expression: '%Condition.abatementDateTime'
   - text: Note
     type: text
     linkId: note

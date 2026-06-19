@@ -14,9 +14,8 @@ body:
     - bodySites: "{[ %QuestionnaireResponse.repeat(item).where(linkId='body-site').answer.valueCoding ]}"
     - recorderRef: "{{ %QuestionnaireResponse.answers('recorder') }}"
     - asserterRef: "{{ %QuestionnaireResponse.answers('asserter') }}"
-    - onsetDateTime: "{{ %QuestionnaireResponse.answers('onset-date-time') }}"
-    - recordedDate: "{{ %QuestionnaireResponse.answers('recorded-date') }}"
-    - abatementDateTime: "{{ %QuestionnaireResponse.answers('abatement-date-time') }}"
+    - onsetDateTime: "{{ %QuestionnaireResponse.item.where(linkId='onset-date-time').answer.valueDateTime.first() }}"
+    - recordedDate: "{{ %QuestionnaireResponse.item.where(linkId='recorded-date').answer.valueDateTime.first() }}"
     - note: "{{ %QuestionnaireResponse.answers('note') }}"
     - codeDisplay: "{{ iif(%code.display.exists(), %code.display, %code.text) }}"
     - narrativeDiv: "<div xmlns='http://www.w3.org/1999/xhtml'>PH Core Condition{{ iif(%patientRef.display.exists(), ' for ' + %patientRef.display, '') }}{{ iif(%codeDisplay.exists(), ' — ' + %codeDisplay, '') }}{{ iif(%clinicalStatus.display.exists(), ' — ' + %clinicalStatus.display, iif(%clinicalStatus.code.exists(), ' — ' + %clinicalStatus.code, '')) }}.</div>"
@@ -81,8 +80,6 @@ body:
                 onsetDateTime: "{{ %onsetDateTime }}"
             - "{% if %recordedDate.exists() %}":
                 recordedDate: "{{ %recordedDate }}"
-            - "{% if %abatementDateTime.exists() %}":
-                abatementDateTime: "{{ %abatementDateTime }}"
             - "{% if %note.exists() %}":
                 note:
                   - text: "{{ %note }}"
