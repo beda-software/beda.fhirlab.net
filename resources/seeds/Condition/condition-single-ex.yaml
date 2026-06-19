@@ -2,22 +2,42 @@ resourceType: Condition
 id: condition-single-ex
 meta:
   profile:
-    - "urn://example.com/ph-core/fhir/StructureDefinition/ph-core-condition"
-    - "http://hl7.org/fhir/uv/ips/StructureDefinition/Condition-uv-ips"
-text:
-  status: generated
-  div: "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p><b>Generated Narrative</b></p><p><b>identifier</b>: id: condition-single-ex</p><p><b>clinicalStatus</b>: <span title=\"Codes: {http://terminology.hl7.org/CodeSystem/condition-clinical active}\">Active</span></p><p><b>code</b>: <span title=\"Codes: {http://snomed.info/sct 44054006}\">Diabetes mellitus type 2</span></p><p><b>subject</b>: <a href=\"#Patient_patient-single-ex\">See above (Patient/patient-single-ex)</a></p></div>"
+    - https://fhir.doh.gov.ph/phcore/StructureDefinition/ph-core-condition
+    - http://hl7.org/fhir/uv/ips/StructureDefinition/Condition-uv-ips
 clinicalStatus:
   coding:
     - code: active
       system: http://terminology.hl7.org/CodeSystem/condition-clinical
       display: Active
+verificationStatus:
+  coding:
+    - code: confirmed
+      system: http://terminology.hl7.org/CodeSystem/condition-ver-status
+      display: Confirmed
+category:
+  - coding:
+      - system: http://terminology.hl7.org/CodeSystem/condition-category
+        code: problem-list-item
+        display: Problem List Item
+    text: Chronic Condition
 code:
   coding:
     - code: "44054006"
-      system: "http://snomed.info/sct"
-      display: "Diabetes mellitus type 2"
+      system: http://snomed.info/sct
+      display: Diabetes mellitus type 2
+  text: Type 2 Diabetes Mellitus
 subject:
   reference: Patient/patient-single-ex
 encounter:
   reference: Encounter/encounter-single-ex
+onsetDateTime: "2020-03-15"
+recordedDate: "2020-03-15T10:30:00+08:00"
+note:
+  - text: >-
+      Patient diagnosed with T2DM during routine health screening. Currently on
+      Metformin 500mg twice daily.
+text:
+  status: generated
+  div: >-
+    <div xmlns="http://www.w3.org/1999/xhtml">Type 2 Diabetes Mellitus — active,
+    confirmed for Juan Dela Cruz.</div>

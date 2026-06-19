@@ -1,0 +1,92 @@
+id: condition-create-extract-connectathon
+type: FHIRPath
+resourceType: Mapping
+body:
+  "{% assign %}":
+    - id: "{{ %QuestionnaireResponse.answers('conditionId') }}"
+    - patientRef: "{{ %QuestionnaireResponse.answers('patient') }}"
+    - encounterRef: "{{ %QuestionnaireResponse.answers('encounter') }}"
+    - clinicalStatus: "{{ %QuestionnaireResponse.answers('clinical-status') }}"
+    - verificationStatus: "{{ %QuestionnaireResponse.answers('verification-status') }}"
+    - categories: "{[ %QuestionnaireResponse.repeat(item).where(linkId='category').answer.valueCoding ]}"
+    - severity: "{{ %QuestionnaireResponse.answers('severity') }}"
+    - code: "{{ %QuestionnaireResponse.answers('code') }}"
+    - bodySites: "{[ %QuestionnaireResponse.repeat(item).where(linkId='body-site').answer.valueCoding ]}"
+    - recorderRef: "{{ %QuestionnaireResponse.answers('recorder') }}"
+    - asserterRef: "{{ %QuestionnaireResponse.answers('asserter') }}"
+    - onsetDateTime: "{{ %QuestionnaireResponse.answers('onset-date-time') }}"
+    - recordedDate: "{{ %QuestionnaireResponse.answers('recorded-date') }}"
+    - abatementDateTime: "{{ %QuestionnaireResponse.answers('abatement-date-time') }}"
+    - note: "{{ %QuestionnaireResponse.answers('note') }}"
+    - codeDisplay: "{{ iif(%code.display.exists(), %code.display, %code.text) }}"
+    - narrativeDiv: "<div xmlns='http://www.w3.org/1999/xhtml'>PH Core Condition{{ iif(%patientRef.display.exists(), ' for ' + %patientRef.display, '') }}{{ iif(%codeDisplay.exists(), ' — ' + %codeDisplay, '') }}{{ iif(%clinicalStatus.display.exists(), ' — ' + %clinicalStatus.display, iif(%clinicalStatus.code.exists(), ' — ' + %clinicalStatus.code, '')) }}.</div>"
+    - addCondition:
+        request:
+          "{% if %id.exists() %}":
+            url: /Condition/{{ %id }}
+            method: PUT
+          "{% else %}":
+            url: /Condition
+            method: POST
+        resource:
+          resourceType: Condition
+          meta:
+            profile:
+              - https://fhir.doh.gov.ph/phcore/StructureDefinition/ph-core-condition
+          id:
+            "{% if %id.exists() %}": "{{ %id }}"
+          subject: "{{ %patientRef }}"
+          clinicalStatus:
+            coding:
+              - "{{ %clinicalStatus }}"
+            text: "{{ %clinicalStatus.display }}"
+          text:
+            status: generated
+            div: "{{ %narrativeDiv }}"
+          "{% merge %}":
+            - "{% if %verificationStatus.exists() %}":
+                verificationStatus:
+                  coding:
+                    - "{{ %verificationStatus }}"
+                  text: "{{ %verificationStatus.display }}"
+            - "{% if %categories.exists() %}":
+                category:
+                  - "{% for category in %categories %}":
+                      coding:
+                        - "{{ %category }}"
+                      text: "{{ %category.display }}"
+            - "{% if %severity.exists() %}":
+                severity:
+                  coding:
+                    - "{{ %severity }}"
+                  text: "{{ %severity.display }}"
+            - "{% if %code.exists() %}":
+                code:
+                  coding:
+                    - "{{ %code }}"
+                  text: "{{ %codeDisplay }}"
+            - "{% if %bodySites.exists() %}":
+                bodySite:
+                  - "{% for bodySite in %bodySites %}":
+                      coding:
+                        - "{{ %bodySite }}"
+                      text: "{{ %bodySite.display }}"
+            - "{% if %encounterRef.exists() %}":
+                encounter: "{{ %encounterRef }}"
+            - "{% if %recorderRef.exists() %}":
+                recorder: "{{ %recorderRef }}"
+            - "{% if %asserterRef.exists() %}":
+                asserter: "{{ %asserterRef }}"
+            - "{% if %onsetDateTime.exists() %}":
+                onsetDateTime: "{{ %onsetDateTime }}"
+            - "{% if %recordedDate.exists() %}":
+                recordedDate: "{{ %recordedDate }}"
+            - "{% if %abatementDateTime.exists() %}":
+                abatementDateTime: "{{ %abatementDateTime }}"
+            - "{% if %note.exists() %}":
+                note:
+                  - text: "{{ %note }}"
+  resourceType: Bundle
+  type: transaction
+  entry:
+    - "{{ %addCondition }}"
