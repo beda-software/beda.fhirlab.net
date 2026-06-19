@@ -223,6 +223,8 @@ item:
           expression: '%Condition.note.text.first()'
 resourceType: Questionnaire
 title: Condition create PH
+subjectType:
+  - Patient
 extension:
   - url: https://emr-core.beda.software/StructureDefinition/questionnaire-mapper
     valueReference:
