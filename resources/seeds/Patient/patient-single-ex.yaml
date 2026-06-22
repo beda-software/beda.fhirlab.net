@@ -50,6 +50,12 @@ extension:
         - code: Ilongots
           system: https://fhir.doh.gov.ph/phcore/CodeSystem/indigenous-groups
           display: Ilongots
+  - url: https://fhir.doh.gov.ph/phcore/StructureDefinition/indigenous-group
+    valueCodeableConcept:
+      coding:
+        - code: Aetas
+          system: https://fhir.doh.gov.ph/phcore/CodeSystem/indigenous-groups
+          display: Aetas
   - url: https://fhir.doh.gov.ph/phcore/StructureDefinition/race
     valueCodeableConcept:
       coding:
@@ -65,17 +71,17 @@ address:
       - url: https://fhir.doh.gov.ph/phcore/StructureDefinition/region
         valueCoding:
           code: '0102800000'
-          system: https://fhir.doh.gov.ph/phcore/CodeSystem/PSGC
+          system: https://psa.gov.ph/classification/psgc
           display: Ilocos Norte
       - url: https://fhir.doh.gov.ph/phcore/StructureDefinition/province
         valueCoding:
           code: '1705100000'
-          system: https://fhir.doh.gov.ph/phcore/CodeSystem/PSGC
+          system: https://psa.gov.ph/classification/psgc
           display: Occidental Mindoro
       - url: https://fhir.doh.gov.ph/phcore/StructureDefinition/city-municipality
         valueCoding:
           code: '1380100000'
-          system: https://fhir.doh.gov.ph/phcore/CodeSystem/PSGC
+          system: https://psa.gov.ph/classification/psgc
           display: City of Caloocan
     city: Quezon City
     district: NCR
