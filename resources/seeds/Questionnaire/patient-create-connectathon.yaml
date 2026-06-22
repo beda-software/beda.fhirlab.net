@@ -95,12 +95,7 @@ item:
           http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-initialExpression
         valueExpression:
           language: text/fhirpath
-          expression: >-
-            iif(
-              %Patient.telecom.where(system='phone').value.exists(),
-              %Patient.telecom.where(system='phone').value.first(),
-              '+63'
-            )
+          expression: "%Patient.telecom.where(system='phone').value.first() | '+63'"
   - text: Email
     type: string
     linkId: email
@@ -452,7 +447,7 @@ item:
               http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-initialExpression
             valueExpression:
               language: text/fhirpath
-              expression: iif(%context.country.exists(), %context.country, 'PH')
+              expression: "%context.country | 'PH'"
     text: Address
     type: group
     linkId: address-group

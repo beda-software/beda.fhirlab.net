@@ -8,7 +8,6 @@ body:
     - middleName: "{{ %QuestionnaireResponse.answers('middle-name') }}"
     - lastName: "{{ %QuestionnaireResponse.answers('last-name') }}"
     - gender: "{{ %QuestionnaireResponse.answers('gender') }}"
-    - patientGender: "{{ %Patient.gender }}"
     - birthDate: "{{ %QuestionnaireResponse.answers('birth-date') }}"
     - phone: "{{ %QuestionnaireResponse.answers('phone') }}"
     - email: "{{ %QuestionnaireResponse.answers('email') }}"
@@ -57,8 +56,8 @@ body:
                   coding:
                     - "{{ %maritalStatus }}"
                   text: "{{ %maritalStatus.display }}"
-            - "{% if %gender.exists() or %patientGender.exists() %}":
-                gender: "{{ iif(%gender.code.exists(), %gender.code, iif(%gender.exists(), %gender, %patientGender)) }}"
+            - "{% if %gender.exists() %}":
+                gender: "{{ %gender.coding.code }}"
             - "{% if %birthDate.exists() %}":
                 birthDate: "{{ %birthDate }}"
             - "{% if %philhealthId.exists() or %philsysId.exists() %}":
@@ -148,7 +147,7 @@ body:
                           - "{% if %addressPostalCode.exists() %}":
                               postalCode: "{{ %addressPostalCode }}"
                           - "{% if %addressCountry.exists() %}":
-                              country: "{{ iif(%addressCountry.code.exists(), %addressCountry.code, %addressCountry) }}"
+                              country: "{{ %addressCountry.code }}"
           extension:
             - "{% for nationalityItem in %nationalityGroup %}":
                 "{% assign %}":
