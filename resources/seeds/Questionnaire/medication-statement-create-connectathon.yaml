@@ -88,7 +88,7 @@ item:
     answerValueSet: http://hl7.org/fhir/ValueSet/reason-medication-status-codes
     initialExpression:
       language: text/fhirpath
-      expression: "%MedicationStatement.statusReason.coding.first()"
+      expression: "%MedicationStatement.statusReason.first().coding.first()"
 
   - linkId: category
     text: Category

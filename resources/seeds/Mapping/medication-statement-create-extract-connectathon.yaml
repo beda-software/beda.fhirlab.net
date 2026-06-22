@@ -41,10 +41,10 @@ body:
             status: generated
             div: "{{ %narrativeDiv }}"
           statusReason:
-            "{% if %statusReason.exists() %}":
-              coding:
-                - "{{ %statusReason }}"
-              text: "{{ %statusReason.display }}"
+            - "{% if %statusReason.exists() %}":
+                coding:
+                  - "{{ %statusReason }}"
+                text: "{{ %statusReason.display }}"
           category:
             "{% if %category.exists() %}":
               coding:
