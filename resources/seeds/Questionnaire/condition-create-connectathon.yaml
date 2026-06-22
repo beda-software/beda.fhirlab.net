@@ -1,115 +1,102 @@
+resourceType: Questionnaire
+id: condition-create-connectathon
+name: condition-create-connectathon
+title: Condition create PH
+status: active
+url: condition-create
+subjectType:
+  - Patient
 meta:
   profile:
     - https://emr-core.beda.software/StructureDefinition/fhir-emr-questionnaire
-name: condition-create-connectathon
+mapping:
+  - reference: Mapping/condition-create-extract-connectathon
+launchContext:
+  - name:
+      code: Condition
+    type:
+      - Condition
+  - name:
+      code: Patient
+    type:
+      - Patient
 item:
-  - text: ConditionId
+  - linkId: conditionId
+    text: ConditionId
     type: string
-    linkId: conditionId
-    extension:
-      - url: http://hl7.org/fhir/StructureDefinition/questionnaire-hidden
-        valueBoolean: true
-      - url: >-
-          http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-initialExpression
-        valueExpression:
-          language: text/fhirpath
-          expression: '%Condition.id'
-  - text: Patient
+    hidden: true
+    initialExpression:
+      language: text/fhirpath
+      expression: "%Condition.id"
+
+  - linkId: patient
+    text: Patient
     type: reference
-    linkId: patient
     required: true
-    extension:
-      - url: >-
-          http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-choiceColumn
-        extension:
-          - url: path
-            valueString: >-
-              name.given.first() + ' ' + name.family.first()
-          - url: forDisplay
-            valueBoolean: true
-      - url: >-
-          http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-answerExpression
-        valueExpression:
-          language: application/x-fhir-query
-          expression: Patient
-      - url: >-
-          http://hl7.org/fhir/StructureDefinition/questionnaire-referenceResource
-        valueCode: Patient
-      - url: >-
-          http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-initialExpression
-        valueExpression:
-          language: text/fhirpath
-          expression: "iif(%Condition.subject.exists(), %Condition.subject, %Patient)"
-  - text: Encounter
+    referenceResource:
+      - Patient
+    answerExpression:
+      language: application/x-fhir-query
+      expression: Patient
+    choiceColumn:
+      - forDisplay: true
+        path: name.given.first() + ' ' + name.family.first()
+    initialExpression:
+      language: text/fhirpath
+      expression: "iif(%Condition.subject.exists(), %Condition.subject, %Patient)"
+
+  - linkId: encounter
+    text: Encounter
     type: reference
-    linkId: encounter
-    extension:
-      - url: >-
-          http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-choiceColumn
-        extension:
-          - url: path
-            valueString: >-
-              class.display + ' - ' + period.start.toString().split('.')[0].split('T')[0] + ' ' + period.start.toString().split('.')[0].split('T')[1]
-          - url: forDisplay
-            valueBoolean: true
-      - url: >-
-          http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-answerExpression
-        valueExpression:
-          language: application/x-fhir-query
-          expression: Encounter?patient={{%QuestionnaireResponse.repeat(item).where(linkId='patient').answer.valueReference.reference}}
-      - url: >-
-          http://hl7.org/fhir/StructureDefinition/questionnaire-referenceResource
-        valueCode: Encounter
-      - url: >-
-          http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-initialExpression
-        valueExpression:
-          language: text/fhirpath
-          expression: '%Condition.encounter'
-  - text: Clinical status
+    referenceResource:
+      - Encounter
+    answerExpression:
+      language: application/x-fhir-query
+      expression: "Encounter?patient={{%QuestionnaireResponse.repeat(item).where(linkId='patient').answer.valueReference.reference}}"
+    choiceColumn:
+      - forDisplay: true
+        path: class.display + ' - ' + period.start.toString().split('.')[0].split('T')[0] + ' ' + period.start.toString().split('.')[0].split('T')[1]
+    initialExpression:
+      language: text/fhirpath
+      expression: "%Condition.encounter"
+
+  - linkId: clinical-status
+    text: Clinical status
     type: choice
-    linkId: clinical-status
     required: true
     answerValueSet: http://hl7.org/fhir/ValueSet/condition-clinical
-    extension:
-      - url: >-
-          http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-initialExpression
-        valueExpression:
-          language: text/fhirpath
-          expression: '%Condition.clinicalStatus.coding.first()'
-  - text: Verification status
+    initialExpression:
+      language: text/fhirpath
+      expression: "%Condition.clinicalStatus.coding.first()"
+
+  - linkId: verification-status
+    text: Verification status
     type: choice
-    linkId: verification-status
     answerValueSet: http://hl7.org/fhir/ValueSet/condition-ver-status
-    extension:
-      - url: >-
-          http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-initialExpression
-        valueExpression:
-          language: text/fhirpath
-          expression: '%Condition.verificationStatus.coding.first()'
-  - text: Category
+    initialExpression:
+      language: text/fhirpath
+      expression: "%Condition.verificationStatus.coding.first()"
+
+  - linkId: category
+    text: Category
     type: choice
-    linkId: category
     repeats: true
     answerValueSet: http://hl7.org/fhir/ValueSet/condition-category
-    extension:
-      - url: >-
-          http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-initialExpression
-        valueExpression:
-          language: text/fhirpath
-          expression: '%Condition.category.coding'
-  - text: Severity
+    initialExpression:
+      language: text/fhirpath
+      expression: "%Condition.category.coding"
+
+  - linkId: severity
+    text: Severity
     type: choice
-    linkId: severity
     answerValueSet: http://hl7.org/fhir/ValueSet/condition-severity
-    extension:
-      - url: >-
-          http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-initialExpression
-        valueExpression:
-          language: text/fhirpath
-          expression: '%Condition.severity.coding.first()'
-  - text: Condition code
+    initialExpression:
+      language: text/fhirpath
+      expression: "%Condition.severity.coding.first()"
+
+  - linkId: code
+    text: Condition code
     type: choice
-    linkId: code
     required: true
     # TODO: uncomment answerValueSet when tx.fhirlab.net expands condition-code reliably
     # answerValueSet: http://hl7.org/fhir/ValueSet/condition-code
@@ -118,115 +105,66 @@ item:
           system: http://snomed.info/sct
           code: "44054006"
           display: Diabetes mellitus type 2
-    extension:
-      - url: >-
-          http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-initialExpression
-        valueExpression:
-          language: text/fhirpath
-          expression: '%Condition.code.coding.first()'
-  - text: Body site
+    initialExpression:
+      language: text/fhirpath
+      expression: "%Condition.code.coding.first()"
+
+  - linkId: body-site
+    text: Body site
     type: choice
-    linkId: body-site
     repeats: true
     answerValueSet: http://hl7.org/fhir/ValueSet/body-site
-    extension:
-      - url: >-
-          http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-initialExpression
-        valueExpression:
-          language: text/fhirpath
-          expression: '%Condition.bodySite.coding'
-  - text: Recorder
+    initialExpression:
+      language: text/fhirpath
+      expression: "%Condition.bodySite.coding"
+
+  - linkId: recorder
+    text: Recorder
     type: reference
-    linkId: recorder
-    extension:
-      - url: >-
-          http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-choiceColumn
-        extension:
-          - url: path
-            valueString: >-
-              name.given.first() + ' ' + name.family
-          - url: forDisplay
-            valueBoolean: true
-      - url: >-
-          http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-answerExpression
-        valueExpression:
-          language: application/x-fhir-query
-          expression: Practitioner
-      - url: >-
-          http://hl7.org/fhir/StructureDefinition/questionnaire-referenceResource
-        valueCode: Practitioner
-      - url: >-
-          http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-initialExpression
-        valueExpression:
-          language: text/fhirpath
-          expression: '%Condition.recorder'
-  - text: Asserter
+    referenceResource:
+      - Practitioner
+    answerExpression:
+      language: application/x-fhir-query
+      expression: Practitioner
+    choiceColumn:
+      - forDisplay: true
+        path: name.given.first() + ' ' + name.family
+    initialExpression:
+      language: text/fhirpath
+      expression: "%Condition.recorder"
+
+  - linkId: asserter
+    text: Asserter
     type: reference
-    linkId: asserter
-    extension:
-      - url: >-
-          http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-choiceColumn
-        extension:
-          - url: path
-            valueString: >-
-              name.given.first() + ' ' + name.family
-          - url: forDisplay
-            valueBoolean: true
-      - url: >-
-          http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-answerExpression
-        valueExpression:
-          language: application/x-fhir-query
-          expression: Practitioner
-      - url: >-
-          http://hl7.org/fhir/StructureDefinition/questionnaire-referenceResource
-        valueCode: Practitioner
-      - url: >-
-          http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-initialExpression
-        valueExpression:
-          language: text/fhirpath
-          expression: '%Condition.asserter'
-  - text: Onset date and time
+    referenceResource:
+      - Practitioner
+    answerExpression:
+      language: application/x-fhir-query
+      expression: Practitioner
+    choiceColumn:
+      - forDisplay: true
+        path: name.given.first() + ' ' + name.family
+    initialExpression:
+      language: text/fhirpath
+      expression: "%Condition.asserter"
+
+  - linkId: onset-date-time
+    text: Onset date and time
     type: dateTime
-    linkId: onset-date-time
-    extension:
-      - url: >-
-          http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-initialExpression
-        valueExpression:
-          language: text/fhirpath
-          expression: '%Condition.onsetDateTime'
-  - text: Recorded date
+    initialExpression:
+      language: text/fhirpath
+      expression: "%Condition.onsetDateTime"
+
+  - linkId: recorded-date
+    text: Recorded date
     type: dateTime
-    linkId: recorded-date
-    extension:
-      - url: >-
-          http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-initialExpression
-        valueExpression:
-          language: text/fhirpath
-          expression: '%Condition.recordedDate'
-  - text: Note
+    initialExpression:
+      language: text/fhirpath
+      expression: "%Condition.recordedDate"
+
+  - linkId: note
+    text: Note
     type: text
-    linkId: note
-    extension:
-      - url: >-
-          http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-initialExpression
-        valueExpression:
-          language: text/fhirpath
-          expression: '%Condition.note.text.first()'
-resourceType: Questionnaire
-title: Condition create PH
-subjectType:
-  - Patient
-extension:
-  - url: https://emr-core.beda.software/StructureDefinition/questionnaire-mapper
-    valueReference:
-      reference: Mapping/condition-create-extract-connectathon
-  - url: http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-launchContext
-    extension:
-      - url: name
-        valueCoding:
-          code: Condition
-      - url: type
-        valueCode: Condition
-status: active
-id: condition-create-connectathon
-url: condition-create
+    initialExpression:
+      language: text/fhirpath
+      expression: "%Condition.note.text.first()"

@@ -1,6 +1,6 @@
 id: condition-create-extract-connectathon
-type: FHIRPath
 resourceType: Mapping
+type: FHIRPath
 body:
   "{% assign %}":
     - id: "{{ %QuestionnaireResponse.answers('conditionId') }}"
@@ -8,10 +8,10 @@ body:
     - encounterRef: "{{ %QuestionnaireResponse.answers('encounter') }}"
     - clinicalStatus: "{{ %QuestionnaireResponse.answers('clinical-status') }}"
     - verificationStatus: "{{ %QuestionnaireResponse.answers('verification-status') }}"
-    - categories: "{[ %QuestionnaireResponse.repeat(item).where(linkId='category').answer.valueCoding ]}"
+    - categories: "{[ %QuestionnaireResponse.item.where(linkId='category').answer.valueCoding ]}"
     - severity: "{{ %QuestionnaireResponse.answers('severity') }}"
     - code: "{{ %QuestionnaireResponse.answers('code') }}"
-    - bodySites: "{[ %QuestionnaireResponse.repeat(item).where(linkId='body-site').answer.valueCoding ]}"
+    - bodySites: "{[ %QuestionnaireResponse.item.where(linkId='body-site').answer.valueCoding ]}"
     - recorderRef: "{{ %QuestionnaireResponse.answers('recorder') }}"
     - asserterRef: "{{ %QuestionnaireResponse.answers('asserter') }}"
     - onsetDateTime: "{{ %QuestionnaireResponse.item.where(linkId='onset-date-time').answer.valueDateTime.first() }}"
@@ -32,8 +32,7 @@ body:
           meta:
             profile:
               - https://fhir.doh.gov.ph/phcore/StructureDefinition/ph-core-condition
-          id:
-            "{% if %id.exists() %}": "{{ %id }}"
+          id: "{{ %id }}"
           subject: "{{ %patientRef }}"
           clinicalStatus:
             coding:
@@ -42,47 +41,38 @@ body:
           text:
             status: generated
             div: "{{ %narrativeDiv }}"
-          "{% merge %}":
-            - "{% if %verificationStatus.exists() %}":
-                verificationStatus:
-                  coding:
-                    - "{{ %verificationStatus }}"
-                  text: "{{ %verificationStatus.display }}"
-            - "{% if %categories.exists() %}":
-                category:
-                  - "{% for category in %categories %}":
-                      coding:
-                        - "{{ %category }}"
-                      text: "{{ %category.display }}"
-            - "{% if %severity.exists() %}":
-                severity:
-                  coding:
-                    - "{{ %severity }}"
-                  text: "{{ %severity.display }}"
-            - "{% if %code.exists() %}":
-                code:
-                  coding:
-                    - "{{ %code }}"
-                  text: "{{ %codeDisplay }}"
-            - "{% if %bodySites.exists() %}":
-                bodySite:
-                  - "{% for bodySite in %bodySites %}":
-                      coding:
-                        - "{{ %bodySite }}"
-                      text: "{{ %bodySite.display }}"
-            - "{% if %encounterRef.exists() %}":
-                encounter: "{{ %encounterRef }}"
-            - "{% if %recorderRef.exists() %}":
-                recorder: "{{ %recorderRef }}"
-            - "{% if %asserterRef.exists() %}":
-                asserter: "{{ %asserterRef }}"
-            - "{% if %onsetDateTime.exists() %}":
-                onsetDateTime: "{{ %onsetDateTime }}"
-            - "{% if %recordedDate.exists() %}":
-                recordedDate: "{{ %recordedDate }}"
+          verificationStatus:
+            "{% if %verificationStatus.exists() %}":
+              coding:
+                - "{{ %verificationStatus }}"
+              text: "{{ %verificationStatus.display }}"
+          category:
+            - "{% for category in %categories %}":
+                coding:
+                  - "{{ %category }}"
+                text: "{{ %category.display }}"
+          severity:
+            "{% if %severity.exists() %}":
+              coding:
+                - "{{ %severity }}"
+              text: "{{ %severity.display }}"
+          code:
+            coding:
+              - "{{ %code }}"
+            text: "{{ %codeDisplay }}"
+          bodySite:
+            - "{% for bodySite in %bodySites %}":
+                coding:
+                  - "{{ %bodySite }}"
+                text: "{{ %bodySite.display }}"
+          encounter: "{{ %encounterRef }}"
+          recorder: "{{ %recorderRef }}"
+          asserter: "{{ %asserterRef }}"
+          onsetDateTime: "{{ %onsetDateTime }}"
+          recordedDate: "{{ %recordedDate }}"
+          note:
             - "{% if %note.exists() %}":
-                note:
-                  - text: "{{ %note }}"
+                text: "{{ %note }}"
   resourceType: Bundle
   type: transaction
   entry:
