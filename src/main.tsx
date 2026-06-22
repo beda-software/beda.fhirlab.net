@@ -39,6 +39,7 @@ import { matchCurrentUserRole, Role } from '@beda.software/emr/utils';
 import { isSuccess, RemoteDataResult, isFailure } from '@beda.software/remote-data';
 
 import { Analytics } from './containers/Analytics';
+import { ConditionsUberList } from './containers/ConditionsUberList';
 import { EncountersUberList } from './containers/EncountersUberList';
 import { ImmunizationsUberList } from './containers/ImmunizationsUberList ';
 import { MedicationsUberList } from './containers/MedicationsUberList';
@@ -143,6 +144,7 @@ function menuLayout() {
             { label: t`Observations`, path: '/observations-ph', icon: <ServicesIcon /> },
             { label: t`Medications`, path: '/medications-ph', icon: <MedicationsIcon /> },
             { label: t`Procedures`, path: '/procedures-ph', icon: <ServicesIcon /> },
+            { label: t`Conditions`, path: '/conditions-ph', icon: <ServicesIcon /> },
             { label: t`Questionnaire`, path: '/questionnaires-ph', icon: <ServicesIcon /> },
             { label: t`Analytics`, path: '/analytics-ph', icon: <ServicesIcon /> },
         ],
@@ -178,6 +180,7 @@ export const AppWithContext = () => {
                                     <Route path="/practitioners-ph" element={<PractitionersUberList />} />
                                     <Route path="/organizations-ph" element={<OrganizationsUberList />} />
                                     <Route path="/procedures-ph" element={<ProceduresUberList />} />
+                                    <Route path="/conditions-ph" element={<ConditionsUberList />} />
                                     <Route path="/immunizations-ph" element={<ImmunizationsUberList />} />
                                     <Route path="/observations-ph" element={<ObservationsUberList />} />
                                     <Route path="/medications-ph" element={<MedicationsUberList />} />
