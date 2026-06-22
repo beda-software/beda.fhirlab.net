@@ -4,6 +4,11 @@ import { MedicationStatement, Reference } from 'fhir/r4b';
 
 import { questionnaireAction, ResourceListPage } from '@beda.software/emr/components';
 import { SearchBarColumnType } from '@beda.software/emr/dist/components/SearchBar/types';
+import { compileAsFirst } from '@beda.software/emr/utils';
+
+const getMedicationCode = compileAsFirst<Medication, string>(
+    'Medication.code.text | Medication.code.coding.first().display',
+);
 import { formatHumanDateTime } from '@beda.software/emr/utils';
 
 function getPatientLabel(subject?: Reference): string | undefined {
