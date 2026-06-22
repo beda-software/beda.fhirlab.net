@@ -1,16 +1,16 @@
 id: medication-statement-create-extract-connectathon
-type: FHIRPath
 resourceType: Mapping
+type: FHIRPath
 body:
   "{% assign %}":
     - id: "{{ %QuestionnaireResponse.answers('medication-statement-id') }}"
     - patientRef: "{{ %QuestionnaireResponse.answers('patient') }}"
     - status: "{{ %QuestionnaireResponse.answers('status') }}"
-    - statusCode: "{{ %status.coding.code }}"
+    - statusCode: "{{ %status.code }}"
     - statusReason: "{{ %QuestionnaireResponse.answers('status-reason') }}"
     - category: "{{ %QuestionnaireResponse.answers('category') }}"
     - medicationCode: "{{ %QuestionnaireResponse.answers('medication') }}"
-    - reasonCodes: "{[ %QuestionnaireResponse.repeat(item).where(linkId='reason-code').answer.valueCoding ]}"
+    - reasonCodes: "{[ %QuestionnaireResponse.item.where(linkId='reason-code').answer.valueCoding ]}"
     - effectiveDateTime: "{{ %QuestionnaireResponse.answers('effective-date-time') }}"
     - encounterRef: "{{ %QuestionnaireResponse.answers('encounter') }}"
     - dosage: "{{ %QuestionnaireResponse.answers('dosage') }}"
@@ -30,8 +30,7 @@ body:
           meta:
             profile:
               - https://fhir.doh.gov.ph/phcore/StructureDefinition/ph-core-medicationstatement
-          id:
-            "{% if %id.exists() %}": "{{ %id }}"
+          id: "{{ %id }}"
           status: "{{ %statusCode }}"
           subject: "{{ %patientRef }}"
           medicationCodeableConcept:
@@ -41,33 +40,29 @@ body:
           text:
             status: generated
             div: "{{ %narrativeDiv }}"
-          "{% merge %}":
-            - "{% if %statusReason.exists() %}":
-                statusReason:
-                  - coding:
-                      - "{{ %statusReason }}"
-                    text: "{{ %statusReason.display }}"
-            - "{% if %category.exists() %}":
-                category:
-                  coding:
-                    - "{{ %category }}"
-                  text: "{{ %category.display }}"
-            - "{% if %reasonCodes.exists() %}":
-                reasonCode:
-                  - "{% for reasonCode in %reasonCodes %}":
-                      coding:
-                        - "{{ %reasonCode }}"
-                      text: "{{ %reasonCode.display }}"
-            - "{% if %effectiveDateTime.exists() %}":
-                effectiveDateTime: "{{ %effectiveDateTime }}"
-            - "{% if %encounterRef.exists() %}":
-                context: "{{ %encounterRef }}"
+          statusReason:
+            "{% if %statusReason.exists() %}":
+              coding:
+                - "{{ %statusReason }}"
+              text: "{{ %statusReason.display }}"
+          category:
+            "{% if %category.exists() %}":
+              coding:
+                - "{{ %category }}"
+              text: "{{ %category.display }}"
+          reasonCode:
+            - "{% for reasonCode in %reasonCodes %}":
+                coding:
+                  - "{{ %reasonCode }}"
+                text: "{{ %reasonCode.display }}"
+          effectiveDateTime: "{{ %effectiveDateTime }}"
+          context: "{{ %encounterRef }}"
+          dosage:
             - "{% if %dosage.exists() %}":
-                dosage:
-                  - text: "{{ %dosage }}"
+                text: "{{ %dosage }}"
+          note:
             - "{% if %note.exists() %}":
-                note:
-                  - text: "{{ %note }}"
+                text: "{{ %note }}"
   resourceType: Bundle
   type: transaction
   entry:
