@@ -4,7 +4,11 @@ import { Patient } from 'fhir/r4b';
 
 import { questionnaireAction, navigationAction, ResourceListPage } from '@beda.software/emr/components';
 import { SearchBarColumnType } from '@beda.software/emr/dist/components/SearchBar/types';
-import { formatHumanDate, renderHumanName } from '@beda.software/emr/utils';
+import { formatHumanDate, renderHumanName, compileAsFirst } from '@beda.software/emr/utils';
+
+const getPhilHealthId = compileAsFirst<Patient, string>(
+    "Patient.identifier.where(system='http://philhealth.gov.ph/fhir/Identifier/philhealth-id').value | Patient.identifier.where(system='urn://example.com/ph-core/fhir/NamingSystem/philhealth-id-ns').value",
+);
 
 export function PatientUberList() {
     return (
@@ -37,8 +41,7 @@ export function PatientUberList() {
                     title: 'PhilHealth ID',
                     dataIndex: 'identifier',
                     key: 'identifier',
-                    render: (_text, { resource }) =>
-                        resource.identifier?.find(({ system }) => system === 'urn://example.com/ph-core/fhir/NamingSystem/philhealth-id-ns')?.value,
+                    render: (_text, { resource }) => getPhilHealthId(resource),
                     width: 250,
                 },
             ]}
