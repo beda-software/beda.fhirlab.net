@@ -8,7 +8,7 @@ body:
     - lastName: "{{ %QuestionnaireResponse.answers('last-name') }}"
     - gender: "{{ %QuestionnaireResponse.answers('gender') }}"
     - birthDate: "{{ %QuestionnaireResponse.answers('birth-date') }}"
-    - nationalityGroup: "{{ %QuestionnaireResponse.answers('nationality-group') }}"
+    - nationalityRows: "{[ %QuestionnaireResponse.repeat(item).where(linkId='nationality-group') ]}"
     - religion: "{{ %QuestionnaireResponse.answers('religion') }}"
     - indigenous: "{{ %QuestionnaireResponse.answers('indigenous') }}"
     - indigenousGroup: "{{ %QuestionnaireResponse.answers('indigenous-group') }}"
@@ -78,11 +78,11 @@ body:
                 country:
                   "{% if %addressCountry.exists() %}": "{{ %addressCountry.code }}"
           extension:
-            - "{% for nationalityItem in %nationalityGroup %}":
+            - "{% for nationalityItem in %nationalityRows %}":
                 - "{% assign %}":
-                    - nationality: "{{ nationalityItem.answers('nationality') }}"
-                    - nationalityStart: "{{ nationalityItem.answers('nationality-start') }}"
-                    - nationalityEnd: "{{ nationalityItem.answers('nationality-end') }}"
+                    - nationality: "{{ %nationalityItem.item.where(linkId='nationality').answer.valueCoding.first() }}"
+                    - nationalityStart: "{{ %nationalityItem.item.where(linkId='nationality-start').answer.valueDate.first() }}"
+                    - nationalityEnd: "{{ %nationalityItem.item.where(linkId='nationality-end').answer.valueDate.first() }}"
                   extension:
                     - "{% if %nationality.exists() %}":
                         url: code
