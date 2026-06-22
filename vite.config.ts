@@ -32,7 +32,20 @@ export default defineConfig(({ command }) => ({
     resolve: {
         alias: [
             { find: 'src', replacement: path.resolve(__dirname, './src/') },
+            {
+                find: 'styled-components',
+                replacement: path.resolve(__dirname, 'node_modules/styled-components'),
+            },
+            {
+                find: '@lingui/react',
+                replacement: path.resolve(__dirname, 'node_modules/@lingui/react'),
+            },
+            {
+                find: '@lingui/core',
+                replacement: path.resolve(__dirname, 'node_modules/@lingui/core'),
+            },
         ],
+        dedupe: ['styled-components', 'react', 'react-dom', '@lingui/react', '@lingui/core'],
     },
     define: {
         'process.env': {},
