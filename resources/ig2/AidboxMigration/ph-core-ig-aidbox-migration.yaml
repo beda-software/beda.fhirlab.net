@@ -1,0 +1,9 @@
+resourceType: AidboxMigration
+id: ph-core-ig-aidbox-migration
+status: to-run
+action: far-migration-fhir-package-install
+params:
+  resourceType: Parameters
+  parameter:
+    - name: package
+      valueString: 'file:///resources/ig2/0.2.0-ci-build.tgz'
