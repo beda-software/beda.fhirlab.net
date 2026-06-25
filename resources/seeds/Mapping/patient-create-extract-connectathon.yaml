@@ -110,16 +110,16 @@ body:
                           - "{% if %addressItem.exists() %}":
                               address:
                                 "{% assign %}":
-                                  - addressUse: "{{ %addressItem.item.where(linkId='9zZP5YXz').answer.valueCoding.first() }}"
-                                  - addressLine: "{{ %addressItem.item.where(linkId='aOuEfx2o').answer.valueString.first() }}"
-                                  - addressRegion: "{{ %addressItem.item.where(linkId='A3C2gl0r').answer.valueCoding.first() }}"
-                                  - addressProvince: "{{ %addressItem.item.where(linkId='FjdwA17T').answer.valueCoding.first() }}"
-                                  - addressCityMunicipality: "{{ %addressItem.item.where(linkId='LnBTHFO1').answer.valueCoding.first() }}"
-                                  - addressBarangay: "{{ %addressItem.item.where(linkId='gYn_JAfL').answer.valueCoding.first() }}"
-                                  - addressCity: "{{ %addressItem.item.where(linkId='x_S9l3tQ').answer.valueString.first() }}"
-                                  - addressDistrict: "{{ %addressItem.item.where(linkId='0qAQ3uME').answer.valueString.first() }}"
-                                  - addressPostalCode: "{{ %addressItem.item.where(linkId='D9uI25LH').answer.valueString.first() }}"
-                                  - addressCountry: "{{ %addressItem.item.where(linkId='HVVM03-Q').answer.valueCoding.first() }}"
+                                  - addressUse: "{{ %addressItem.item.where(linkId='contact-address-use').answer.valueCoding.first() }}"
+                                  - addressLine: "{{ %addressItem.item.where(linkId='contact-address-line').answer.valueString.first() }}"
+                                  - addressRegion: "{{ %addressItem.item.where(linkId='contact-address-region').answer.valueCoding.first() }}"
+                                  - addressProvince: "{{ %addressItem.item.where(linkId='contact-address-province').answer.valueCoding.first() }}"
+                                  - addressCityMunicipality: "{{ %addressItem.item.where(linkId='contact-address-city-municipality').answer.valueCoding.first() }}"
+                                  - addressBarangay: "{{ %addressItem.item.where(linkId='contact-address-barangay').answer.valueCoding.first() }}"
+                                  - addressCity: "{{ %addressItem.item.where(linkId='contact-address-city').answer.valueString.first() }}"
+                                  - addressDistrict: "{{ %addressItem.item.where(linkId='contact-address-district').answer.valueString.first() }}"
+                                  - addressPostalCode: "{{ %addressItem.item.where(linkId='contact-address-postal-code').answer.valueString.first() }}"
+                                  - addressCountry: "{{ %addressItem.item.where(linkId='contact-address-country').answer.valueCoding.first() }}"
                                 "{% if %addressUse.exists() or %addressLine.exists() or %addressRegion.exists() or %addressProvince.exists() or %addressCityMunicipality.exists() or %addressBarangay.exists() or %addressCity.exists() or %addressDistrict.exists() or %addressPostalCode.exists() or %addressCountry.exists() %}":
                                   "{% merge %}":
                                     - "{% if %addressUse.exists() %}":

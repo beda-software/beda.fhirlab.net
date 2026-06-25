@@ -509,7 +509,7 @@ item:
           expression: "%context.address"
           name: address
         item:
-          - linkId: 9zZP5YXz
+          - linkId: contact-address-use
             text: "Address use"
             type: choice
             answerOption:
@@ -536,16 +536,16 @@ item:
             initialExpression:
               language: "text/fhirpath"
               expression: |-
-                %Questionnaire.repeat(item).where(linkId='address-use').answerOption.valueCoding.where(code=%context.use).first()
+                %Questionnaire.repeat(item).where(linkId='contact-address-use').answerOption.valueCoding.where(code=%context.use).first()
 
-          - linkId: aOuEfx2o
+          - linkId: contact-address-line
             text: "Address Line"
             type: string
             initialExpression:
               language: "text/fhirpath"
               expression: "%context.line.first()"
 
-          - linkId: A3C2gl0r
+          - linkId: contact-address-region
             text: Region
             type: choice
             answerOption:
@@ -562,7 +562,7 @@ item:
               expression: |-
                 %context.extension('https://fhir.doh.gov.ph/phcore/StructureDefinition/region').valueCoding
 
-          - linkId: FjdwA17T
+          - linkId: contact-address-province
             text: Province
             type: choice
             answerOption:
@@ -579,7 +579,7 @@ item:
               expression: |-
                 %context.extension('https://fhir.doh.gov.ph/phcore/StructureDefinition/province').valueCoding
 
-          - linkId: LnBTHFO1
+          - linkId: contact-address-city-municipality
             text: "City Municipality"
             type: choice
             answerOption:
@@ -596,7 +596,7 @@ item:
               expression: |-
                 %context.extension('https://fhir.doh.gov.ph/phcore/StructureDefinition/city-municipality').valueCoding
 
-          - linkId: gYn_JAfL
+          - linkId: contact-address-barangay
             text: Barangay
             type: choice
             answerOption:
@@ -613,28 +613,28 @@ item:
               expression: |-
                 %context.extension('https://fhir.doh.gov.ph/phcore/StructureDefinition/barangay').valueCoding
 
-          - linkId: x_S9l3tQ
+          - linkId: contact-address-city
             text: City
             type: string
             initialExpression:
               language: "text/fhirpath"
               expression: "%context.city"
 
-          - linkId: 0qAQ3uME
+          - linkId: contact-address-district
             text: District
             type: string
             initialExpression:
               language: "text/fhirpath"
               expression: "%context.district"
 
-          - linkId: D9uI25LH
+          - linkId: contact-address-postal-code
             text: "Postal Code"
             type: string
             initialExpression:
               language: "text/fhirpath"
               expression: "%context.postalCode"
 
-          - linkId: HVVM03-Q
+          - linkId: contact-address-country
             text: Country
             type: choice
             answerOption:
