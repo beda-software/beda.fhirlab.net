@@ -92,7 +92,8 @@ body:
                         - contactRelationship: "{{ %contactItem.item.where(linkId='contact-relationship').answer.valueCoding.first() }}"
                         - contactFirstName: "{{ %contactItem.item.where(linkId='contact-first-name').answer.valueString.first() }}"
                         - contactLastName: "{{ %contactItem.item.where(linkId='contact-last-name').answer.valueString.first() }}"
-                      "{% if %contactRelationship.exists() or %contactFirstName.exists() or %contactLastName.exists() %}":
+                        - addressItem: "{{ %contactItem.item.where(linkId='contact-address') }}"
+                      "{% if %contactRelationship.exists() or %contactFirstName.exists() or %contactLastName.exists() or %addressItem.exists() %}":
                         "{% merge %}":
                           - "{% if %contactRelationship.exists() %}":
                               relationship:
@@ -106,6 +107,48 @@ body:
                                   - "{% if %contactFirstName.exists() %}": "{{ %contactFirstName }}"
                                 family:
                                   "{% if %contactLastName.exists() %}": "{{ %contactLastName }}"
+                          - "{% if %addressItem.exists() %}":
+                              address:
+                                "{% assign %}":
+                                  - addressUse: "{{ %addressItem.item.where(linkId='contact-address-use').answer.valueCoding.first() }}"
+                                  - addressLine: "{{ %addressItem.item.where(linkId='contact-address-line').answer.valueString.first() }}"
+                                  - addressRegion: "{{ %addressItem.item.where(linkId='contact-address-region').answer.valueCoding.first() }}"
+                                  - addressProvince: "{{ %addressItem.item.where(linkId='contact-address-province').answer.valueCoding.first() }}"
+                                  - addressCityMunicipality: "{{ %addressItem.item.where(linkId='contact-address-city-municipality').answer.valueCoding.first() }}"
+                                  - addressBarangay: "{{ %addressItem.item.where(linkId='contact-address-barangay').answer.valueCoding.first() }}"
+                                  - addressCity: "{{ %addressItem.item.where(linkId='contact-address-city').answer.valueString.first() }}"
+                                  - addressDistrict: "{{ %addressItem.item.where(linkId='contact-address-district').answer.valueString.first() }}"
+                                  - addressPostalCode: "{{ %addressItem.item.where(linkId='contact-address-postal-code').answer.valueString.first() }}"
+                                  - addressCountry: "{{ %addressItem.item.where(linkId='contact-address-country').answer.valueCoding.first() }}"
+                                "{% if %addressUse.exists() or %addressLine.exists() or %addressRegion.exists() or %addressProvince.exists() or %addressCityMunicipality.exists() or %addressBarangay.exists() or %addressCity.exists() or %addressDistrict.exists() or %addressPostalCode.exists() or %addressCountry.exists() %}":
+                                  "{% merge %}":
+                                    - "{% if %addressUse.exists() %}":
+                                        use: "{{ %addressUse.code }}"
+                                    - "{% if %addressLine.exists() %}":
+                                        line:
+                                          - "{{ %addressLine }}"
+                                    - "{% if %addressRegion.exists() or %addressProvince.exists() or %addressCityMunicipality.exists() or %addressBarangay.exists() %}":
+                                        extension:
+                                          - "{% if %addressRegion.exists() %}":
+                                              url: "https://fhir.doh.gov.ph/phcore/StructureDefinition/region"
+                                              valueCoding: "{{ %addressRegion }}"
+                                          - "{% if %addressProvince.exists() %}":
+                                              url: "https://fhir.doh.gov.ph/phcore/StructureDefinition/province"
+                                              valueCoding: "{{ %addressProvince }}"
+                                          - "{% if %addressCityMunicipality.exists() %}":
+                                              url: "https://fhir.doh.gov.ph/phcore/StructureDefinition/city-municipality"
+                                              valueCoding: "{{ %addressCityMunicipality }}"
+                                          - "{% if %addressBarangay.exists() %}":
+                                              url: "https://fhir.doh.gov.ph/phcore/StructureDefinition/barangay"
+                                              valueCoding: "{{ %addressBarangay }}"
+                                    - "{% if %addressCity.exists() %}":
+                                        city: "{{ %addressCity }}"
+                                    - "{% if %addressDistrict.exists() %}":
+                                        district: "{{ %addressDistrict }}"
+                                    - "{% if %addressPostalCode.exists() %}":
+                                        postalCode: "{{ %addressPostalCode }}"
+                                    - "{% if %addressCountry.exists() %}":
+                                        country: "{{ iif(%addressCountry.code.exists(), %addressCountry.code, %addressCountry) }}"
             - "{% if %addressGroupItems.exists() %}":
                 address:
                   - "{% for addressItem in %addressGroupItems %}":
