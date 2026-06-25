@@ -38,3 +38,4 @@ storybook-static
 resources/seeds/initBundle.json
 
 resources/init-bundles/
+resources/ig2/*.tgz

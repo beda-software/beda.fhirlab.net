@@ -1,4 +1,14 @@
 services:
+  ig-downloader:
+    image: curlimages/curl:latest
+    volumes:
+      - ./resources/ig2:/output/ig2
+    entrypoint: >
+      sh -c "
+        [ -f /output/ig2/0.2.0-ci-build.tgz ] && exit 0;
+        curl -fsSL -o /tmp/package.tgz https://build.fhir.org/ig/UP-Manila-SILab/ph-core/package.tgz &&
+        cp /tmp/package.tgz /output/ig2/0.2.0-ci-build.tgz
+      "
   sdc:
     image: bedasoftware/fhir-sdc:2.1.0a6
     depends_on:
@@ -6,12 +16,27 @@ services:
         condition: service_healthy
     env_file:
       - ./env/sdc
+  patch-init-bundle:
+    image: alpine:latest
+    depends_on:
+      build-seeds:
+        condition: service_completed_successfully
+    entrypoint: sh
+    command:
+      - -c
+      - >-
+        apk add --no-cache jq -q &&
+        jq '(.entry[] | select(.resource.resourceType == "AidboxMigration") | .request) |= {method: "POST", url: "/AidboxMigration"}'
+        /app/init-bundles/initBundle.json > /tmp/initBundle.json &&
+        mv /tmp/initBundle.json /app/init-bundles/initBundle.json
+    volumes:
+      - ./resources/init-bundles:/app/init-bundles
   devbox:
     image: healthsamurai/aidboxone:stable
     depends_on:
       devbox-db:
         condition: service_healthy
-      build-seeds:
+      patch-init-bundle:
         condition: service_completed_successfully
     healthcheck:
       test: curl --fail http://localhost:8080/health || exit 1
@@ -26,6 +51,7 @@ services:
       - AIDBOX_LICENSE
     volumes:
       - ./resources/init-bundles:/resources/init-bundles
+      - ./resources/ig2:/resources/ig2:ro
   devbox-db:
     image: "postgres:18"
     env_file:
@@ -37,8 +63,13 @@ services:
       retries: 10
   build-seeds:
     image: bedasoftware/fhirsnake:latest
+    depends_on:
+      ig-downloader:
+        condition: service_completed_successfully
     command:
       - export
+      - --input
+      - /app/resources/ig2
       - --input
       - /app/resources/ig0
       - --input
@@ -52,14 +83,20 @@ services:
     volumes:
       - ./resources/ig0:/app/resources/ig0:ro
       - ./resources/ig1:/app/resources/ig1:ro
+      - ./resources/ig2:/app/resources/ig2:ro
       - ./resources/seeds:/app/resources/seeds:ro
       - ./resources/init-bundles:/app/init-bundles
     env_file:
       - ./env/build-seeds
   watch-seeds:
     image: bedasoftware/fhirsnake:latest
+    depends_on:
+      ig-downloader:
+        condition: service_completed_successfully
     command:
       - watch
+      - --input
+      - /app/resources/ig2
       - --input
       - /app/resources/ig0
       - --input
@@ -73,6 +110,7 @@ services:
     volumes:
       - ./resources/ig0:/app/resources/ig0:ro
       - ./resources/ig1:/app/resources/ig1:ro
+      - ./resources/ig2:/app/resources/ig2:ro
       - ./resources/seeds:/app/resources/seeds:ro
     env_file:
       - ./env/build-seeds
